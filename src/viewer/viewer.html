@@ -6,12 +6,26 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Viewer</title>
 
+    <script type="module" src="viewer.js"></script>
+
     <link rel="stylesheet" href="viewer.css">
-    <script src="viewer.js"></script>
 </head>
 <body>
     
-    <main></main>
+    <main>
+        <debug-console></debug-console>
+        <source-map-viewer></source-map-viewer>
+    </main>
+    
+    <gyro-layout>
+
+        <gyro-layout-column>
+            <gyro-group show-tabs fixed-tabs>
+                <viewer-controls tab="options"></viewer-controls>
+            </gyro-group>
+        </gyro-layout-column>
+
+    </gyro-layout>
 
 </body>
 </html>

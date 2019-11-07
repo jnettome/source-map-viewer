@@ -1,1 +1,1 @@
-View Source 2 Maps in the browser.
+View Source Maps in the browser.
