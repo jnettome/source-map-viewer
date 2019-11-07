@@ -1,6 +1,8 @@
 body {
     background: black;
     margin: 0;
+    font-family: 'Roboto', sans-serif;
+    color: #eee;
 }
 
 main {
@@ -15,10 +17,10 @@ gyro-layout {
     display: block;
     position: absolute;
     top: 0;
-    width: 250px;
+    width: 300px;
     right: 0;
     bottom: 0;
-    margin: 15px;
+    margin: 10px;
 
     --panel-background: hsla(0, 0%, 15%, 0.8);
 }

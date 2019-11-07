@@ -17,6 +17,10 @@ export class SourceViewer extends Viewport {
     constructor() {
         super();
 
+        this.mapinfo = {
+            name: 'de_dust2',
+        }
+
         this.addEventListener('load', () => {
             const mapObj = Resources.get('map');
             const verts = Loader.loadObjFile(mapObj);

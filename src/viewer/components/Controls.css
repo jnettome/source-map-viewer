@@ -1,12 +1,36 @@
 :host {
+    display: block;
+    width: 100%;
 
+    font-size: 16px;
+}
+
+.row {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 10px;
+    box-sizing: border-box;
+}
+
+.meta {
+    margin: 5px 0;
+    font-size: 0.95em;
 }
 
 .layers {
     width: 100%;
-    height: 
+    height: auto;
+    padding: 5px 0;
+    box-sizing: border-box;
+    background: #1c1c1c;
 }
 
-.layer {
+.layer:nth-child(even) {
+    background: #272727;
+}
 
+.layer .title {
+    font-size: 0.9em;
 }
