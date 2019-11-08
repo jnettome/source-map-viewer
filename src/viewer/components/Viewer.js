@@ -28,11 +28,30 @@ export class SourceViewer extends Viewport {
             const geo = new Geometry({
                 vertecies: verts,
                 material: new DefaultMaterial(),
-                scale: 40,
+                scale: 1,
+                rotation: [0, 0, 0],
+                position: [0, 0, 0],
             });
 
             this.scene.add(geo);
         })  
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+
+        const minimap = new Viewport();
+        minimap.scene = this.scene;
+        minimap.camera = minimap.scene.lightsource;
+        minimap.style.position = "fixed";
+        minimap.style.left = "10px";
+        minimap.style.bottom = "10px";
+        minimap.style.width = "150px";
+        minimap.style.height = "150px";
+
+        minimap.renderer.setResolution(150, 150);
+
+        this.parentNode.appendChild(minimap);
     }
 
 }

@@ -51,6 +51,10 @@ export class DebugConsole extends THConsole {
         Logger.listen('Renderer', log);
         Logger.listen('Resources', log);
 
+        window.addEventListener('error', e => {
+            this.error(...args);
+        })
+
         console.log = (...args) => {
             this.log(...args);
             consolelog(...args);
