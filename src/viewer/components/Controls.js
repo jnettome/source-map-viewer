@@ -55,11 +55,19 @@ export class ViewerControls extends HTMLElement {
                         const visChangeHandler = e => {
                             layer.hidden = !e.target.checked;
                         }
+                        const guideChangeHandler = e => {
+                            layer.guide = !e.target.checked;
+                            console.log(layer);
+                        }
                         return html`
                             <div class="layer row">
                                 <span class="title">${layer.constructor.name}</span>
-                                <check-box ?checked=${!layer.hidden} @change=${visChangeHandler} 
-                                            icon="visibility_off" active-icon="visibility"></check-box>
+                                <div class="buttons">
+                                    <check-box ?checked=${!layer.hidden} @change=${visChangeHandler} 
+                                        icon="visibility_off" active-icon="visibility"></check-box>
+                                    <check-box ?checked=${!layer.guide} @change=${guideChangeHandler} 
+                                        icon="info" active-icon="info"></check-box>
+                                </div>
                             </div>
                         `;
                     })}

@@ -13,6 +13,15 @@
     align-items: center;
     padding: 4px 10px;
     box-sizing: border-box;
+    flex: 0;
+}
+
+.buttons {
+    display: flex;
+}
+
+check-box {
+    margin-left: 5px;
 }
 
 .meta {
@@ -34,4 +43,5 @@
 
 .layer .title {
     font-size: 0.9em;
+    flex: 1;
 }
