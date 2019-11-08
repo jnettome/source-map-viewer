@@ -9,6 +9,8 @@
     <script type="module" src="viewer.js"></script>
 
     <link rel="stylesheet" href="viewer.css">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
     
@@ -19,9 +21,12 @@
     
     <gyro-layout>
 
-        <gyro-layout-column>
+        <gyro-layout-column style="grid-template-rows: 100px 1fr;">
             <gyro-group show-tabs fixed-tabs>
-                <viewer-controls tab="options"></viewer-controls>
+                <viewer-metadata tab="Map"></viewer-metadata>
+            </gyro-group>
+            <gyro-group show-tabs fixed-tabs>
+                <viewer-controls tab="Controls"></viewer-controls>
             </gyro-group>
         </gyro-layout-column>
 

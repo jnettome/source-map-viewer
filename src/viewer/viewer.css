@@ -14,19 +14,25 @@ main {
 }
 
 gyro-layout {
-    display: block;
+    z-index: 10000;
     position: absolute;
     top: 0;
-    width: 300px;
+    width: 280px;
     right: 0;
     bottom: 0;
     margin: 10px;
 
+    --layout-grid-gap: 4px;
     --panel-background: hsla(0, 0%, 15%, 0.8);
+    --tab-background: hsla(0, 0%, 50%, 0);
+    --tab-active-background: rgba(200, 200, 200, 0);
+    --tab-hover-background: rgba(200, 200, 200, 0.1);
+    --tabs-background: hsla(0, 0%, 33%, 0.25);
 }
 
 gyro-group {
     border-radius: 4px;
+    backdrop-filter: blur(4px);
 }
 
 debug-console {

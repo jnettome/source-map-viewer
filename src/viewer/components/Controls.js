@@ -1,5 +1,6 @@
 import { render, html } from 'lit-html';
-import styles from './Controls.css';
+import styles from './Components.css';
+import './CheckBox.js';
 
 export class ViewerControls extends HTMLElement {
 
@@ -11,11 +12,11 @@ export class ViewerControls extends HTMLElement {
 
     connectedCallback() {
         const viewer = document.querySelector('source-map-viewer');
-        this.initializeViewer(viewer);
+        this.initialize(viewer);
         this.render();
     }
 
-    initializeViewer(viewer) {
+    initialize(viewer) {
         this.viewer = viewer;
 
         const scene = this.viewer.scene;
@@ -36,31 +37,29 @@ export class ViewerControls extends HTMLElement {
     }
 
     render() {
-        const viewer = this.viewer;
         const renderer = this.viewer.renderer;
         const layers = [...this.viewer.scene.objects] || [];
 
         const template = html`
             <style>${styles}</style>
-            <div class="options" tab="Options">
+            <div class="options">
                 <div class="meta">
                     <div class="row">
-                        <span>Loaded map:</span>
-                        <span>${viewer.mapinfo.name}</span>
-                    </div>
-                    <div class="row">
                         <span>Show Grid</span>
-                        <input type="checkbox" ?checked=${renderer.showGrid} @change=${(e) => { renderer.showGrid = e.target.checked; }}/>
+                        <check-box ?checked=${renderer.showGrid} @change=${(e) => { renderer.showGrid = e.target.checked; }} 
+                                    icon="visibility_off" active-icon="visibility"></check-box>
                     </div>
                 </div>
                 <div class="layers">
                     ${layers.map(layer => {
+                        const visChangeHandler = e => {
+                            layer.hidden = !e.target.checked;
+                        }
                         return html`
                             <div class="layer row">
                                 <span class="title">${layer.constructor.name}</span>
-                                <input type="checkbox" ?checked=${!layer.hidden} @change=${(e) => {
-                                    layer.hidden = !e.target.checked;
-                                }}/>
+                                <check-box ?checked=${!layer.hidden} @change=${visChangeHandler} 
+                                            icon="visibility_off" active-icon="visibility"></check-box>
                             </div>
                         `;
                     })}
