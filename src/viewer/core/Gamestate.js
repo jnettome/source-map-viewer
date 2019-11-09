@@ -10,7 +10,7 @@ export class GameState {
         this.socket = new WebSocket("ws://127.0.0.1:3000/");
 
         this.socket.onopen = () => {
-            this.socket.send("connected"); 
+            console.log('Socket connected');
         }
 
         this.socket.onmessage = (event) => {

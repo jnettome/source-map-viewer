@@ -8,7 +8,8 @@
     "@uncut/gyro-layout": "git+https://github.com/luckydye/gyro-layout.git",
     "@uncut/viewport": "git+https://github.com/luckydye/viewport.git",
     "lit-html": "^1.1.2",
-    "webpack": "^4.41.2"
+    "webpack": "^4.41.2",
+    "ws": "^7.2.0"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^5.0.4",
