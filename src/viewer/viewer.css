@@ -23,7 +23,7 @@ gyro-layout {
     margin: 10px;
 
     --layout-grid-gap: 4px;
-    --panel-background: hsla(0, 0%, 15%, 0.8);
+    --panel-background: hsla(0, 0%, 10%, 0.8);
     --tab-background: hsla(0, 0%, 50%, 0);
     --tab-active-background: rgba(200, 200, 200, 0);
     --tab-hover-background: rgba(200, 200, 200, 0.1);
@@ -39,11 +39,14 @@ debug-console {
     position: absolute;
     top: 10px;
     left: 200px;
-    right: 20px;
-    width: auto;
+    width: 400px;
     z-index: 1000;
     opacity: 0.9;
     pointer-events: none;
+    padding: 10px;
+    background: hsla(0, 0%, 10%, 0.8);
+    border-radius: 4px;
+    backdrop-filter: blur(12px);
 }
 
 source-map-viewer {

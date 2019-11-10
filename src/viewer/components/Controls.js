@@ -19,11 +19,10 @@ export class ViewerControls extends HTMLElement {
     initialize(viewer) {
         this.viewer = viewer;
 
-        const scene = this.viewer.scene;
-
         let lastchange = null;
 
         const update = () => {
+            const scene = this.viewer.scene;
             if(scene.lastchange != lastchange) {
                 lastchange = scene.lastchange;
     
@@ -57,6 +56,7 @@ export class ViewerControls extends HTMLElement {
                         }
                         const guideChangeHandler = e => {
                             layer.guide = !e.target.checked;
+                            window.temp = layer;
                             console.log(layer);
                         }
                         return html`
