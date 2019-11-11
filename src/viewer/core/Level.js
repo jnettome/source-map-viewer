@@ -40,7 +40,9 @@ export class Level extends Scene {
             name: 'de_dust2',
         }
 
-        this.build();
+        Resources.load().finally(() => {
+            this.build();
+        })
     }
 
     build() {
@@ -48,10 +50,15 @@ export class Level extends Scene {
 
         const geo = new Geometry({
             vertecies: Loader.loadObjFile(map),
-            materials: map.materials.map(mat => new DefaultMaterial({
-                specular: 0,
-                texture: new Texture(Resources.get(mat)),
-            })),
+            materials: map.materials.map(mat => {
+                const matIndex = mat.match(/[0-9+]/g)[0];
+                const img = Resources.get("material_" + matIndex);
+                const tex = new Texture(img);
+                return new DefaultMaterial({
+                    specular: 0,
+                    texture: tex,
+                });
+            }),
             scale: 0.01,
             rotation: [0, 0, 0],
             position: [0, 0, 0],
