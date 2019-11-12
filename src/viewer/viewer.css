@@ -38,8 +38,9 @@ gyro-group {
 debug-console {
     position: absolute;
     top: 10px;
-    left: 200px;
+    left: 10px;
     width: 400px;
+    height: 80px;
     z-index: 1000;
     opacity: 0.9;
     pointer-events: none;
