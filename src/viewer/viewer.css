@@ -13,11 +13,20 @@ main {
     height: 100%;
 }
 
+canvas {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    background: grey;
+    transform: translateY(-50%);
+    width: 100%;
+}
+
 gyro-layout {
     z-index: 10000;
     position: absolute;
     top: 0;
-    width: 250px;
+    width: 200px;
     right: 0;
     bottom: 0;
     margin: 10px;
@@ -53,4 +62,5 @@ debug-console {
 source-map-viewer {
     width: 100%;
     height: 100%;
+    display: block;
 }

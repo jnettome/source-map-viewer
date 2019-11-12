@@ -6,15 +6,17 @@ import { PlayerControler } from '@uncut/viewport/src/controlers/PlayerControler'
 Config.global.setValue('show.grid', false);
 Config.global.setValue('debug', false);
 
+const canvas = document.createElement('canvas');
+const offscreen = canvas.transferControlToOffscreen();
+
 export class SourceViewer extends Viewport {
 
-    get mapinfo() {
-        return this.scene.mapinfo || {};
-    }
-
     constructor() {
-        // super(PlayerControler);
-        super();
+        super({
+            controllertype: PlayerControler,
+            offscreen: offscreen,
+            canvas: canvas,
+        });
         
         this.renderer.debug = true;
 
@@ -37,35 +39,12 @@ export class SourceViewer extends Viewport {
             }));
         }, 300);
 
-        // setInterval(() => {
-        //     const light = this.scene.lightsource;
-        //     if(light) {
-        //         light.rotation.y = performance.now() / 1000;
-        //     }
-        // }, 16);
-
         MapLoader.load().then(level => {
             this.scene = level;
             level.add(this.camera);
-            // this.minimap();
         })
 
         this.enableSelecting();
-    }
-
-    minimap() {
-        const minimap = new Viewport();
-        minimap.scene = this.scene;
-        minimap.camera = minimap.scene.lightsource;
-        minimap.style.position = "fixed";
-        minimap.style.left = "10px";
-        minimap.style.top = "10px";
-        minimap.style.width = "180px";
-        minimap.style.height = "180px";
-
-        minimap.renderer.setResolution(180, 180);
-
-        this.parentNode.appendChild(minimap);
     }
 
 }

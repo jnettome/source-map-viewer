@@ -23,7 +23,7 @@ export class ViewerControls extends HTMLElement {
 
         const update = () => {
             const scene = this.viewer.scene;
-            if(scene.lastchange != lastchange) {
+            if(scene && scene.lastchange != lastchange) {
                 lastchange = scene.lastchange;
     
                 this.render();
@@ -36,6 +36,10 @@ export class ViewerControls extends HTMLElement {
     }
 
     render() {
+        if(!this.viewer.scene) {
+            return;
+        }
+        
         const renderer = this.viewer.renderer;
         const layers = [...this.viewer.scene.objects] || [];
 
