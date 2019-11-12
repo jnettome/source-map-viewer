@@ -64,8 +64,6 @@ export class Level extends Scene {
             position: [0, 0, 0],
         });
 
-        console.log(geo);
-
         const skybox = new Geometry({
             vertecies: Loader.loadObjFile(Resources.get('skybox_sphere')),
             material: new MattMaterial({
@@ -78,6 +76,20 @@ export class Level extends Scene {
 
         this.add(skybox);
         this.add(geo);
+
+        this.add(new Cube({
+            position: [1, 0.4, 0],
+            rotation: [0.75, 1, 0],
+            material: new DefaultMaterial(),
+            scale: 0.5,
+        }))
+
+        this.add(new Cube({
+            position: [-1, 0.8, 0],
+            rotation: [0.75, -2, 0],
+            material: new DefaultMaterial(),
+            scale: 0.5,
+        }))
 
         this.showPlayers();
     }

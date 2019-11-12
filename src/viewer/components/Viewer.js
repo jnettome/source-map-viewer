@@ -1,6 +1,7 @@
 import Viewport from '@uncut/viewport/components/Viewport';
 import Config from '@uncut/viewport/src/Config';
 import { MapLoader } from '../core/MapLoader';
+import { PlayerControler } from '@uncut/viewport/src/controlers/PlayerControler';
 
 Config.global.setValue('show.grid', false);
 Config.global.setValue('debug', false);
@@ -12,7 +13,7 @@ export class SourceViewer extends Viewport {
     }
 
     constructor() {
-        super();
+        super(PlayerControler);
         
         this.renderer.debug = true;
 
