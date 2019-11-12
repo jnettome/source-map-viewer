@@ -72,7 +72,7 @@ export class Level extends Scene {
             }),
             selectable: false,
             scale: -600,
-            rotation: [0, 0, 0],
+            rotation: [180 * Math.PI / 180, 0, 0],
         });
 
         this.add(skybox);
