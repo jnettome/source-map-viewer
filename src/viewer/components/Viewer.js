@@ -13,7 +13,8 @@ export class SourceViewer extends Viewport {
     }
 
     constructor() {
-        super(PlayerControler);
+        // super(PlayerControler);
+        super();
         
         this.renderer.debug = true;
 
@@ -48,6 +49,8 @@ export class SourceViewer extends Viewport {
             level.add(this.camera);
             // this.minimap();
         })
+
+        this.enableSelecting();
     }
 
     minimap() {

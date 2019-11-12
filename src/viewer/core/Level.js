@@ -70,6 +70,7 @@ export class Level extends Scene {
                 specular: 0,
                 texture: new Texture(Resources.get('skybox'))
             }),
+            selectable: false,
             scale: -600,
             rotation: [0, 0, 0],
         });
