@@ -19,11 +19,6 @@ const res = {
 };
 
 for(let i = 0; i < 33; i++) {
-
-    if(i == 19 || i == 24) {
-        continue;
-    }
-
     res['material_' + i] = `textures/de_dust2_material_${i}.png`;
 }
 
@@ -51,7 +46,7 @@ export class Level extends Scene {
         const geo = new Geometry({
             vertecies: Loader.loadObjFile(map),
             materials: map.materials.map(mat => {
-                const matIndex = mat.match(/[0-9+]/g)[0];
+                const matIndex = mat.match(/[0-9]+/g)[0];
                 const img = Resources.get("material_" + matIndex);
                 const tex = new Texture(img);
                 return new DefaultMaterial({

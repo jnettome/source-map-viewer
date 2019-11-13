@@ -4,7 +4,6 @@ module.exports = {
     mode: "development",
     entry: {
         'viewer': "./src/viewer/viewer.js",
-        'worker': "./src/viewer/worker.js",
     },
     module: {
         noParse: /gl-viewport/,
