@@ -18,7 +18,8 @@ export class SourceViewer extends Viewport {
             canvas: canvas,
         });
         
-        this.renderer.debug = true;
+        this.renderer.debug = false;
+        this.renderer.clearPass = false;
 
         const lastCamPos = localStorage.getItem('camera');
         const cam = JSON.parse(lastCamPos);
