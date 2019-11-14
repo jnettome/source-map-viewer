@@ -41,7 +41,7 @@ gyro-layout {
 
 gyro-group {
     border-radius: 4px;
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(42px);
 }
 
 debug-console {
