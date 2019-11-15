@@ -30,10 +30,6 @@ export class Level extends Scene {
 
     constructor() {
         super();
-        
-        this.mapinfo = {
-            name: 'de_dust2',
-        }
 
         Resources.load().finally(() => {
             this.build();

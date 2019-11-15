@@ -3,7 +3,7 @@ import Config from '@uncut/viewport/src/Config';
 import { MapLoader } from '../core/MapLoader';
 import { PlayerControler } from '@uncut/viewport/src/controlers/PlayerControler';
 
-Config.global.setValue('show.grid', false);
+Config.global.setValue('show.grid', true);
 Config.global.setValue('debug', false);
 
 const canvas = document.createElement('canvas');

@@ -26,13 +26,13 @@ gyro-layout {
     z-index: 10000;
     position: absolute;
     top: 0;
-    width: 200px;
-    right: 0;
+    width: 160px;
+    left: 0;
     bottom: 0;
     margin: 10px;
 
     --layout-grid-gap: 4px;
-    --panel-background: hsla(0, 0%, 10%, 0.8);
+    --panel-background: hsla(0, 0%, 10%, 0.6);
     --tab-background: hsla(0, 0%, 50%, 0);
     --tab-active-background: rgba(200, 200, 200, 0);
     --tab-hover-background: rgba(200, 200, 200, 0.1);
