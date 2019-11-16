@@ -32,20 +32,8 @@ export class BSPLevel extends Scene {
         fetch('../res/maps/ar_shoots.bsp').then(async res => {
             const arrayBuffer = await res.arrayBuffer();
             const bsp = BSPFile.fromDataArray(arrayBuffer);
-
-            const vertexData = Loader.loadBspFile(bsp);
-
-            const geo = new Geometry({
-                vertecies: vertexData.vertecies,
-                indecies: vertexData.indecies,
-                material: new DefaultMaterial(),
-                scale: 0.01,
-                rotation: [0, 0, 0],
-                position: [0, 0, 0],
-            });
-
+            const geo = Loader.loadBspFile(bsp);
             this.add(geo);
-
         });
     }
 

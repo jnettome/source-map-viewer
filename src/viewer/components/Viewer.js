@@ -21,6 +21,10 @@ export class SourceViewer extends Viewport {
         this.renderer.debug = false;
         this.renderer.clearPass = false;
 
+        this.renderer.options = {
+			CULL_FACE: false,
+		}
+
         const lastCamPos = localStorage.getItem('camera');
         const cam = JSON.parse(lastCamPos);
         
@@ -46,6 +50,11 @@ export class SourceViewer extends Viewport {
         })
 
         this.enableSelecting();
+
+        this.addEventListener('select', () => {
+            const outliner = document.querySelector('viewer-controls');
+            outliner.focusLayer(this.cursor.parent);
+        });
     }
 
 }

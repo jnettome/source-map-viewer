@@ -35,6 +35,11 @@ export class ViewerControls extends HTMLElement {
         update();
     }
 
+    focusLayer(layer) {
+        this.focusedLayer = layer;
+        this.render();
+    }
+
     render() {
         if(!this.viewer.scene) {
             return;
@@ -54,18 +59,17 @@ export class ViewerControls extends HTMLElement {
                     </div>
                 </div>
                 <div class="layers">
-                    ${layers.map(layer => {
+                    ${layers.map((layer, i) => {
                         const visChangeHandler = e => {
                             layer.hidden = !e.target.checked;
                         }
                         const guideChangeHandler = e => {
                             layer.guide = !e.target.checked;
                             window.temp = layer;
-                            console.log(layer);
                         }
                         return html`
-                            <div class="layer row">
-                                <span class="title">${layer.constructor.name}</span>
+                            <div class="layer row" data-layer-index="${i}" ?selected=${this.focusedLayer == layer}>
+                                <span class="title">${layer.name}</span>
                                 <div class="buttons">
                                     <check-box ?checked=${!layer.hidden} @change=${visChangeHandler} 
                                         icon="visibility_off" active-icon="visibility"></check-box>

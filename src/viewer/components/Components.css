@@ -29,9 +29,14 @@ check-box {
     font-size: 1em;
 }
 
+.options {
+    height: 100%;
+}
+
 .layers {
+    height: calc(100% - 36px);
+    overflow: auto;
     width: 100%;
-    height: auto;
     box-sizing: border-box;
     background: #1c1c1c;
 }
@@ -40,7 +45,11 @@ check-box {
     background: #272727;
 }
 
+.layer[selected] {
+    background: #494949;
+}
+
 .layer .title {
-    font-size: 1em;
+    font-size: 0.9em;
     flex: 1;
 }

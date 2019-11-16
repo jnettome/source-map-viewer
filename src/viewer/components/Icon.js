@@ -41,14 +41,14 @@ export class Icon extends HTMLElement {
             <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
             <style>
                 :host {
-                    width: var(--icon-size, 16px);
-                    height: var(--icon-size, 16px);
+                    width: var(--icon-size, 14px);
+                    height: var(--icon-size, 14px);
                     display: flex;
                     justify-content: center;
                     align-items: center;
                 }
                 .material-icons {
-                    font-size: var(--icon-size, 16px);
+                    font-size: var(--icon-size, 14px);
                     display: block;
                     pointer-events: none;
                     width: 100%;
