@@ -18,7 +18,7 @@ export class SourceViewer extends Viewport {
             canvas: canvas,
         });
         
-        this.renderer.debug = false;
+        this.renderer.debug = true;
         this.renderer.clearPass = false;
 
         this.renderer.options = {

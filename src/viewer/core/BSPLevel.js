@@ -7,7 +7,7 @@ import { Texture } from '@uncut/viewport/src/materials/Texture';
 import { Resources } from '@uncut/viewport/src/Resources';
 import { Geometry } from '@uncut/viewport/src/scene/Geometry';
 import { Scene } from '@uncut/viewport/src/scene/Scene';
-import BSPFile from 'source-bsp-lib/src/BSPFile';
+import BSPFile from 'source-bsp-lib/src/BSPFile.js';
 
 const res = {
     't_model': 't_model.obj',
