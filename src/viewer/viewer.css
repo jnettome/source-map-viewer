@@ -29,7 +29,7 @@ gyro-layout {
     width: 160px;
     right: 0;
     bottom: 0;
-    margin: 0;
+    margin: 10px;
 
     --layout-grid-gap: 4px;
     --panel-background: hsla(0, 0%, 10%, 0.6);
@@ -40,7 +40,7 @@ gyro-layout {
 }
 
 gyro-group {
-    border-radius: 0;
+    border-radius: 4px;
     backdrop-filter: blur(42px);
 }
 
