@@ -52,4 +52,8 @@ check-box {
 .layer .title {
     font-size: 0.9em;
     flex: 1;
+    max-width: 67%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
