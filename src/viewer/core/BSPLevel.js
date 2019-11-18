@@ -15,13 +15,8 @@ import VVDFile from 'source-bsp-lib/src/VVDFile.js';
 
 import * as Comlink from "comlink";
 
-async function testWorker() {
-    const worker = new Worker("worker.js");
-    const obj = Comlink.wrap(worker);
-    alert(`Counter: ${await obj.counter}`);
-    await obj.inc();
-    alert(`Counter: ${await obj.counter}`);
-}
+const worker = new Worker("worker.js");
+const SourceDecoder = Comlink.wrap(worker);
 
 const res = {
     'skybox_sphere': 'skybox_sphere.obj',
@@ -34,9 +29,7 @@ const singlePropMaterial = new DefaultMaterial();
 
 export class BSPLevel extends Scene {
 
-    static loadBspFile(bspFile) {
-
-        const meshData = bspFile.convertToMesh();
+    static loadBspFile(meshData) {
 
         const vertexData = {
             vertecies: meshData.vertecies.map(vert => ([
@@ -133,71 +126,69 @@ export class BSPLevel extends Scene {
     }
 
     async loadBspMap() {
-        fetch('../res/maps/ar_shoots.bsp').then(async res => {
-            const arrayBuffer = await res.arrayBuffer();
-            const bsp = BSPFile.fromDataArray(arrayBuffer);
 
-            const geo = BSPLevel.loadBspFile(bsp);
-            this.add(geo);
+        const bsp = await SourceDecoder.loadMap('../res/maps/ar_shoots.bsp');
 
-            const props = bsp.gamelumps.sprp;
+        const geo = BSPLevel.loadBspFile(bsp.meshData);
+        this.add(geo);
 
-            for(let prop of props) {
-                this.registerProp(prop);
+        const props = bsp.bsp.gamelumps.sprp;
 
-                const type = this.propTypes.get(this.getPropType(prop));
+        for(let prop of props) {
+            this.registerProp(prop);
 
-                type.listeners.push(meshData => {
-                    const propGeometry = new Geometry({
-                        vertecies: meshData.vertecies.flat(),
-                        indecies: meshData.indecies,
-                        material: singlePropMaterial,
-                        scale: [-0.01, 0.01, 0.01],
-                        position: [
-                            prop.Origin[0] * -0.01,
-                            prop.Origin[2] * 0.01,
-                            prop.Origin[1] * 0.01,
-                        ],
-                        rotation: [
-                            prop.Angles[0] * Math.PI / 180,
-                            prop.Angles[1] * Math.PI / 180,
-                            prop.Angles[2] * Math.PI / 180,
-                        ],
-                    });
-                    const parts = prop.PropType.split('/');
-                    propGeometry.matrixAutoUpdate = false;
-                    propGeometry.name = parts[parts.length-1];
-                    this.add(propGeometry);
+            const type = this.propTypes.get(this.getPropType(prop));
+
+            type.listeners.push(meshData => {
+                const propGeometry = new Geometry({
+                    vertecies: meshData.vertecies.flat(),
+                    indecies: meshData.indecies,
+                    material: singlePropMaterial,
+                    scale: [-0.01, 0.01, 0.01],
+                    position: [
+                        prop.Origin[0] * -0.01,
+                        prop.Origin[2] * 0.01,
+                        prop.Origin[1] * 0.01,
+                    ],
+                    rotation: [
+                        prop.Angles[0] * Math.PI / 180,
+                        prop.Angles[1] * Math.PI / 180,
+                        prop.Angles[2] * Math.PI / 180,
+                    ],
                 });
-            }
+                const parts = prop.PropType.split('/');
+                propGeometry.matrixAutoUpdate = false;
+                propGeometry.name = parts[parts.length-1];
+                this.add(propGeometry);
+            });
+        }
 
-            const propCount = this.propTypes.size;
-            let propCounter = this.propTypes.size;
-            let propSkipCounter = 0;
+        const propCount = this.propTypes.size;
+        let propCounter = this.propTypes.size;
+        let propSkipCounter = 0;
 
-            for(let [_, propType] of this.propTypes) {
-                console.log('Loading prop', propType);
+        for(let [_, propType] of this.propTypes) {
+            console.log('Loading prop', propType);
 
-                this.loadStaticProp(propType).then(meshData => {
-                    if(!geo) {
-                        propSkipCounter++;
-                    } else {
-                        for(let listener of propType.listeners) {
-                            listener(meshData);
-                        }
+            this.loadStaticProp(propType).then(meshData => {
+                if(!geo) {
+                    propSkipCounter++;
+                } else {
+                    for(let listener of propType.listeners) {
+                        listener(meshData);
                     }
+                }
 
-                    propCounter--;
-                    console.log(`Loaded prop ${propCount - propCounter} of ${propCount}`);
+                propCounter--;
+                console.log(`Loaded prop ${propCount - propCounter} of ${propCount}`);
 
-                    if(propCounter == 0) {
-                        console.log(`Skipped ${propSkipCounter} props.`);
-                    }
-                });
-            }
+                if(propCounter == 0) {
+                    console.log(`Skipped ${propSkipCounter} props.`);
+                }
+            });
+        }
 
-            console.log(this.propTypes);
-        });
+        console.log(this.propTypes);
     }
 
     async loadStaticProp(propType) {
@@ -228,17 +219,7 @@ export class BSPLevel extends Scene {
         //     }));
         // });
 
-        // vvd
-        return fetch(`../res/${propType.vvdPath}`).then(async res => {
-            const arrayBuffer = await res.arrayBuffer();
-
-            if(res.status !== 200) return;
-
-            const vvd = VVDFile.fromDataArray(arrayBuffer);
-            const meshData = vvd.convertToMesh();
-
-            return meshData;
-        });
+        return SourceDecoder.loadProp(`../res/${propType.vvdPath}`);
     }
 
 }
