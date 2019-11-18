@@ -7,6 +7,7 @@
     "@uncut/common-components": "git+https://github.com/luckydye/common-components.git",
     "@uncut/gyro-layout": "git+https://github.com/luckydye/gyro-layout.git",
     "@uncut/viewport": "git+https://github.com/luckydye/viewport.git",
+    "comlink": "^4.1.0",
     "lit-html": "^1.1.2",
     "source-bsp-lib": "file:../source-bsp-lib",
     "webpack": "^4.41.2",

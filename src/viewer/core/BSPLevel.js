@@ -13,6 +13,16 @@ import BSPFile from 'source-bsp-lib/src/BSPFile.js';
 import MDLFile from 'source-bsp-lib/src/MDLFile.js';
 import VVDFile from 'source-bsp-lib/src/VVDFile.js';
 
+import * as Comlink from "comlink";
+
+async function testWorker() {
+    const worker = new Worker("worker.js");
+    const obj = Comlink.wrap(worker);
+    alert(`Counter: ${await obj.counter}`);
+    await obj.inc();
+    alert(`Counter: ${await obj.counter}`);
+}
+
 const res = {
     'skybox_sphere': 'skybox_sphere.obj',
     'skybox': 'skybox.png',
@@ -101,9 +111,25 @@ export class BSPLevel extends Scene {
     constructor() {
         super();
 
+        this.propTypes = new Map();
+
         Resources.load().finally(() => {
             this.loadBspMap();
         })
+    }
+
+    registerProp(prop) {
+        if(!this.propTypes.has(prop.PropType)) {
+            this.propTypes.set(prop.PropType, {
+                mdlPath: prop.PropType,
+                vvdPath: prop.PropType.replace('.mdl', '.vvd'),
+                listeners: [],
+            });
+        }
+    }
+
+    getPropType(prop) {
+        return prop.PropType;
     }
 
     async loadBspMap() {
@@ -114,21 +140,53 @@ export class BSPLevel extends Scene {
             const geo = BSPLevel.loadBspFile(bsp);
             this.add(geo);
 
-            const props = bsp.gamelumps.sprp.slice(0, 10);
-
-            const propCount = props.length;
-            let propCounter = props.length;
-            let propSkipCounter = 0;
+            const props = bsp.gamelumps.sprp;
 
             for(let prop of props) {
-                console.log('Loading prop', prop.PropType);
+                this.registerProp(prop);
 
-                this.loadStaticProp(prop).then(geo => {
+                const type = this.propTypes.get(this.getPropType(prop));
+
+                type.listeners.push(meshData => {
+                    const propGeometry = new Geometry({
+                        vertecies: meshData.vertecies.flat(),
+                        indecies: meshData.indecies,
+                        material: singlePropMaterial,
+                        scale: [-0.01, 0.01, 0.01],
+                        position: [
+                            prop.Origin[0] * -0.01,
+                            prop.Origin[2] * 0.01,
+                            prop.Origin[1] * 0.01,
+                        ],
+                        rotation: [
+                            prop.Angles[0] * Math.PI / 180,
+                            prop.Angles[1] * Math.PI / 180,
+                            prop.Angles[2] * Math.PI / 180,
+                        ],
+                    });
+                    const parts = prop.PropType.split('/');
+                    propGeometry.matrixAutoUpdate = false;
+                    propGeometry.name = parts[parts.length-1];
+                    this.add(propGeometry);
+                });
+            }
+
+            const propCount = this.propTypes.size;
+            let propCounter = this.propTypes.size;
+            let propSkipCounter = 0;
+
+            for(let [_, propType] of this.propTypes) {
+                console.log('Loading prop', propType);
+
+                this.loadStaticProp(propType).then(meshData => {
                     if(!geo) {
                         propSkipCounter++;
                     } else {
-                        this.add([geo]);
+                        for(let listener of propType.listeners) {
+                            listener(meshData);
+                        }
                     }
+
                     propCounter--;
                     console.log(`Loaded prop ${propCount - propCounter} of ${propCount}`);
 
@@ -137,10 +195,12 @@ export class BSPLevel extends Scene {
                     }
                 });
             }
+
+            console.log(this.propTypes);
         });
     }
 
-    async loadStaticProp(prop) {
+    async loadStaticProp(propType) {
         // mdl
         // fetch('../res/' + propType).then(async res => {
         //     const arrayBuffer = await res.arrayBuffer();
@@ -169,38 +229,15 @@ export class BSPLevel extends Scene {
         // });
 
         // vvd
-        const propType = prop.PropType;
-
-        return fetch(`../res/${propType.replace('.mdl', '.vvd')}`).then(async res => {
+        return fetch(`../res/${propType.vvdPath}`).then(async res => {
             const arrayBuffer = await res.arrayBuffer();
 
             if(res.status !== 200) return;
 
             const vvd = VVDFile.fromDataArray(arrayBuffer);
-
             const meshData = vvd.convertToMesh();
 
-            const propGeometry = new Geometry({
-                vertecies: meshData.vertecies.flat(),
-                indecies: meshData.indecies,
-                material: singlePropMaterial,
-                scale: [-0.01, 0.01, 0.01],
-                position: [
-                    prop.Origin[0] * -0.01,
-                    prop.Origin[2] * 0.01,
-                    prop.Origin[1] * 0.01,
-                ],
-                rotation: [
-                    prop.Angles[0] * Math.PI / 180,
-                    prop.Angles[1] * Math.PI / 180,
-                    prop.Angles[2] * Math.PI / 180,
-                ],
-            });
-            const parts = prop.PropType.split('/');
-            propGeometry.matrixAutoUpdate = false;
-            propGeometry.name = parts[parts.length-1];
-
-            return propGeometry;
+            return meshData;
         });
     }
 
