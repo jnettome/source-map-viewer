@@ -114,10 +114,10 @@ export class BSPLevel extends Scene {
             const geo = BSPLevel.loadBspFile(bsp);
             this.add(geo);
 
-            const props = bsp.gamelumps.sprp;
+            const props = bsp.gamelumps.sprp.slice(0, 10);
 
-            const propCount = bsp.gamelumps.sprp.length;
-            let propCounter = bsp.gamelumps.sprp.length;
+            const propCount = props.length;
+            let propCounter = props.length;
             let propSkipCounter = 0;
 
             for(let prop of props) {
@@ -126,8 +126,9 @@ export class BSPLevel extends Scene {
                 this.loadStaticProp(prop).then(geo => {
                     if(!geo) {
                         propSkipCounter++;
+                    } else {
+                        this.add([geo]);
                     }
-                    this.add([geo]);
                     propCounter--;
                     console.log(`Loaded prop ${propCount - propCounter} of ${propCount}`);
 
