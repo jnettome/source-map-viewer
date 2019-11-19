@@ -12,7 +12,7 @@ import { Plane } from '@uncut/viewport/src/geo/Plane';
 import BSPFile from 'source-bsp-lib/src/BSPFile.js';
 import MDLFile from 'source-bsp-lib/src/MDLFile.js';
 import VVDFile from 'source-bsp-lib/src/VVDFile.js';
-
+import VPKFile from 'source-bsp-lib/src/VPKFile.js';
 import * as Comlink from "comlink";
 
 const worker = new Worker("worker.js");
@@ -127,7 +127,11 @@ export class BSPLevel extends Scene {
 
     async loadBspMap() {
 
+        const startTime = performance.now();
+
         const bsp = await SourceDecoder.loadMap('../res/maps/ar_shoots.bsp');
+
+        console.log('level decoded in', performance.now() - startTime, 'ms');
 
         const geo = BSPLevel.loadBspFile(bsp.meshData);
         this.add(geo);
@@ -146,19 +150,20 @@ export class BSPLevel extends Scene {
                     material: singlePropMaterial,
                     scale: [-0.01, 0.01, 0.01],
                     position: [
-                        prop.Origin[0] * -0.01,
-                        prop.Origin[2] * 0.01,
-                        prop.Origin[1] * 0.01,
+                        prop.Origin.data[0].data * -0.01,
+                        prop.Origin.data[2].data * 0.01,
+                        prop.Origin.data[1].data * 0.01,
                     ],
                     rotation: [
-                        prop.Angles[0] * Math.PI / 180,
-                        prop.Angles[1] * Math.PI / 180,
-                        prop.Angles[2] * Math.PI / 180,
+                        prop.Angles.data[0].data * Math.PI / 180,
+                        prop.Angles.data[1].data * Math.PI / 180,
+                        prop.Angles.data[2].data * Math.PI / 180,
                     ],
                 });
                 const parts = prop.PropType.split('/');
                 propGeometry.matrixAutoUpdate = false;
                 propGeometry.name = parts[parts.length-1];
+                
                 this.add(propGeometry);
             });
         }
@@ -168,10 +173,8 @@ export class BSPLevel extends Scene {
         let propSkipCounter = 0;
 
         for(let [_, propType] of this.propTypes) {
-            console.log('Loading prop', propType);
-
             this.loadStaticProp(propType).then(meshData => {
-                if(!geo) {
+                if(!meshData) {
                     propSkipCounter++;
                 } else {
                     for(let listener of propType.listeners) {
@@ -202,21 +205,6 @@ export class BSPLevel extends Scene {
 
         //     const bounds_min = mdl.header.hull_min;
         //     const bounds_max = mdl.header.hull_max;
-
-        //     this.add(new Cube({
-        //         material: propsMaterial,
-        //         position: [
-        //             prop.Origin[0] * -0.01,
-        //             prop.Origin[2] * 0.01,
-        //             prop.Origin[1] * 0.01,
-        //         ],
-        //         rotation: [
-        //             prop.Angles[0] * Math.PI / 180,
-        //             prop.Angles[2] * Math.PI / 180,
-        //             prop.Angles[1] * Math.PI / 180,
-        //         ],
-        //         scale: [0.2, 0.2, 0.2],
-        //     }));
         // });
 
         return SourceDecoder.loadProp(`../res/${propType.vvdPath}`);
