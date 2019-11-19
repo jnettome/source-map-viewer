@@ -4,6 +4,10 @@
     font-size: 13.3px;
     font-weight: 300;
     user-select: none;
+    border-radius: 4px;
+    background: hsla(0, 0%, 10%, 0.8);
+    backdrop-filter: blur(12px);
+    overflow: hidden;
 }
 
 .row {

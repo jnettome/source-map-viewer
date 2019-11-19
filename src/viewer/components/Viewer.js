@@ -43,11 +43,10 @@ export class SourceViewer extends Viewport {
             }));
         }, 300);
 
+        const progressbar = new ProgressBar(MapLoader.progress);
+        document.body.appendChild(progressbar);
+
         MapLoader.load().then(level => {
-
-            const progressbar = new ProgressBar(level.progress);
-            document.body.appendChild(progressbar);
-
             this.scene = level;
             level.add(this.camera);
         })

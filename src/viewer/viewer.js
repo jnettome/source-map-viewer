@@ -1,7 +1,6 @@
 import './components/Viewer.js';
-import './components/Console.js';
 import './components/Controls.js';
-import './components/MetaData.js';
+import './components/MapSelect.js';
 import '@uncut/gyro-layout/components/layout/Layout.js';
 import layoutStyles from '@uncut/gyro-layout/components/layout/Layout.css';
 

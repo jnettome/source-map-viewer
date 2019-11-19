@@ -7,6 +7,11 @@ export class Progress {
     constructor() {
         this.steps = 0;
         this.progress = 0;
+        this.listeners = new Set();
+    }
+
+    onMessage(f) {
+        this.listeners.add(f);
     }
 
     addSteps(amount) {
@@ -23,6 +28,12 @@ export class Progress {
 
     finish() {
         this.progress = this.step;
+    }
+
+    message(...data) {
+        for(let f of this.listeners) {
+            f(...data);
+        }
     }
 
 }

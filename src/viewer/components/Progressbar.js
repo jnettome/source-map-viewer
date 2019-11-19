@@ -6,6 +6,7 @@ export class ProgressBar extends HTMLElement {
         super();
 
         this.progress = null;
+        this.logs = [];
 
         this.attachShadow({ mode: 'open' });
 
@@ -14,8 +15,13 @@ export class ProgressBar extends HTMLElement {
         }
     }
 
+    log(...stringArray) {
+        this.logs.push(stringArray.join(" "));
+    }
+
     setProgress(prog) {
         this.progress = prog;
+        this.progress.onMessage((...data) => this.log(...data));
     }
 
     connectedCallback() {
@@ -33,6 +39,9 @@ export class ProgressBar extends HTMLElement {
                     this.progress = null;
                 }
                 this.render();
+
+                const log = this.shadowRoot.querySelector('.log');
+                log.scrollTo(0, log.scrollHeight);
             }
             requestAnimationFrame(update);
         }
@@ -63,7 +72,29 @@ export class ProgressBar extends HTMLElement {
                     background: white;
                     width: calc(var(--progress) * 100%);
                 }
+                .log {
+                    position: absolute;
+                    bottom: 10px;
+                    left: 0;
+                    width: 100%;
+                    margin-bottom: 10px;
+                    display: flex;
+                    flex-direction: column;
+                    max-height: 100px;
+                    overflow: hidden;
+                    font-size: 12px;
+                    font-family: 'Open-Sans', sans-serif;
+                    font-weight: 300;
+                }
+                .log-line {
+
+                }
             </style>
+            <div class="log">
+                ${this.logs.map(log => {
+                    return html`<span class="log-line">${log}</span>`;
+                })}
+            </div>
             <div class="progressbar" data-progress="${prog}"></div>
         `;
         render(template, this.shadowRoot);
