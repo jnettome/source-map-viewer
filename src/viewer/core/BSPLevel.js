@@ -137,32 +137,33 @@ export class BSPLevel extends Scene {
 
             const type = this.propTypes.get(this.getPropType(prop));
 
-            if(type) {
-                type.listeners.push(meshData => {
-                    if(meshData) {
-                        const propGeometry = new Geometry({
-                            vertecies: meshData.vertecies.flat(),
-                            indecies: meshData.indecies,
-                            material: singlePropMaterial,
-                            scale: [-0.01, 0.01, 0.01],
-                            position: [
-                                prop.Origin[0] * -0.01,
-                                prop.Origin[2] * 0.01,
-                                prop.Origin[1] * 0.01,
-                            ],
-                            rotation: [
-                                prop.Angles[0] * Math.PI / 180,
-                                prop.Angles[1] * Math.PI / 180,
-                                prop.Angles[2] * Math.PI / 180,
-                            ],
-                        });
-                        const parts = prop.PropType.split('/');
-                        propGeometry.matrixAutoUpdate = false;
-                        propGeometry.name = parts[parts.length-1];
-                        this.add(propGeometry);
-                    }
+            type.listeners.push(meshData => {
+                prog.clearSteps(1);
+
+                if(!meshData) return;
+
+                const propGeometry = new Geometry({
+                    vertecies: meshData.vertecies.flat(),
+                    indecies: meshData.indecies,
+                    material: singlePropMaterial,
+                    scale: [-0.01, 0.01, 0.01],
+                    position: [
+                        prop.Origin.data[0].data * -0.01,
+                        prop.Origin.data[2].data * 0.01,
+                        prop.Origin.data[1].data * 0.01,
+                    ],
+                    rotation: [
+                        prop.Angles.data[0].data * Math.PI / 180,
+                        prop.Angles.data[1].data * Math.PI / 180,
+                        prop.Angles.data[2].data * Math.PI / 180,
+                    ],
                 });
-            }
+                const parts = prop.PropType.split('/');
+                propGeometry.matrixAutoUpdate = false;
+                propGeometry.name = parts[parts.length-1];
+                
+                this.add(propGeometry);
+            });
         }
 
         const propCount = this.propTypes.size;

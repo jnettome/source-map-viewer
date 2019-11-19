@@ -28,6 +28,19 @@ const SourceDecoder = {
         return load();
     },
     loadProp(vvdPropPath) {
+
+        // mdl
+        // fetch('../res/' + propType).then(async res => {
+        //     const arrayBuffer = await res.arrayBuffer();
+
+        //     if(res.status !== 200) return;
+
+        //     const mdl = MDLFile.fromDataArray(arrayBuffer);
+
+        //     const bounds_min = mdl.header.hull_min;
+        //     const bounds_max = mdl.header.hull_max;
+        // });
+        
         return fetch(vvdPropPath).then(async res => {
             const arrayBuffer = await res.arrayBuffer();
 
