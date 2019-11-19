@@ -6,7 +6,7 @@ importScripts("https://unpkg.com/comlink/dist/umd/comlink.js");
 
 const SourceDecoder = {
     loadMap(bspMapPath) {
-        return fetch('../res/maps/ar_shoots.bsp').then(async res => {
+        return fetch(bspMapPath).then(async res => {
             const arrayBuffer = await res.arrayBuffer();
             
             const bsp = BSPFile.fromDataArray(arrayBuffer);

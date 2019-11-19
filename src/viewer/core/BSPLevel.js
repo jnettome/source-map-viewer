@@ -112,6 +112,7 @@ export class BSPLevel extends Scene {
     }
 
     registerProp(prop) {
+        if(prop.PropType)
         if(!this.propTypes.has(prop.PropType)) {
             this.propTypes.set(prop.PropType, {
                 mdlPath: prop.PropType,
@@ -139,28 +140,32 @@ export class BSPLevel extends Scene {
 
             const type = this.propTypes.get(this.getPropType(prop));
 
-            type.listeners.push(meshData => {
-                const propGeometry = new Geometry({
-                    vertecies: meshData.vertecies.flat(),
-                    indecies: meshData.indecies,
-                    material: singlePropMaterial,
-                    scale: [-0.01, 0.01, 0.01],
-                    position: [
-                        prop.Origin[0] * -0.01,
-                        prop.Origin[2] * 0.01,
-                        prop.Origin[1] * 0.01,
-                    ],
-                    rotation: [
-                        prop.Angles[0] * Math.PI / 180,
-                        prop.Angles[1] * Math.PI / 180,
-                        prop.Angles[2] * Math.PI / 180,
-                    ],
+            if(type) {
+                type.listeners.push(meshData => {
+                    if(meshData) {
+                        const propGeometry = new Geometry({
+                            vertecies: meshData.vertecies.flat(),
+                            indecies: meshData.indecies,
+                            material: singlePropMaterial,
+                            scale: [-0.01, 0.01, 0.01],
+                            position: [
+                                prop.Origin[0] * -0.01,
+                                prop.Origin[2] * 0.01,
+                                prop.Origin[1] * 0.01,
+                            ],
+                            rotation: [
+                                prop.Angles[0] * Math.PI / 180,
+                                prop.Angles[1] * Math.PI / 180,
+                                prop.Angles[2] * Math.PI / 180,
+                            ],
+                        });
+                        const parts = prop.PropType.split('/');
+                        propGeometry.matrixAutoUpdate = false;
+                        propGeometry.name = parts[parts.length-1];
+                        this.add(propGeometry);
+                    }
                 });
-                const parts = prop.PropType.split('/');
-                propGeometry.matrixAutoUpdate = false;
-                propGeometry.name = parts[parts.length-1];
-                this.add(propGeometry);
-            });
+            }
         }
 
         const propCount = this.propTypes.size;
