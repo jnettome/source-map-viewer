@@ -4,9 +4,6 @@ import { MapLoader } from '../core/MapLoader';
 import { PlayerControler } from '@uncut/viewport/src/controlers/PlayerControler';
 import { ProgressBar } from './Progressbar';
 
-Config.global.setValue('show.grid', true);
-Config.global.setValue('debug', false);
-
 const canvas = document.createElement('canvas');
 const offscreen = canvas.transferControlToOffscreen();
 
@@ -19,6 +16,7 @@ export class SourceViewer extends Viewport {
             canvas: canvas,
         });
         
+        this.renderer.showGrid = false;
         this.renderer.debug = false;
         this.renderer.clearPass = false;
 
