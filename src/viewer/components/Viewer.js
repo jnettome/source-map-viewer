@@ -2,6 +2,7 @@ import Viewport from '@uncut/viewport/components/Viewport';
 import Config from '@uncut/viewport/src/Config';
 import { MapLoader } from '../core/MapLoader';
 import { PlayerControler } from '@uncut/viewport/src/controlers/PlayerControler';
+import { ProgressBar } from './Progressbar';
 
 Config.global.setValue('show.grid', true);
 Config.global.setValue('debug', false);
@@ -45,6 +46,10 @@ export class SourceViewer extends Viewport {
         }, 300);
 
         MapLoader.load().then(level => {
+
+            const progressbar = new ProgressBar(level.progress);
+            document.body.appendChild(progressbar);
+
             this.scene = level;
             level.add(this.camera);
         })

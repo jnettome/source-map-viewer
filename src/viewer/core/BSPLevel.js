@@ -14,6 +14,7 @@ import MDLFile from 'source-bsp-lib/src/MDLFile.js';
 import VVDFile from 'source-bsp-lib/src/VVDFile.js';
 import VPKFile from 'source-bsp-lib/src/VPKFile.js';
 import * as Comlink from "comlink";
+import { Progress } from './Progress';
 
 const worker = new Worker("worker.js");
 const SourceDecoder = Comlink.wrap(worker);
@@ -27,7 +28,37 @@ Resources.add(res);
 
 const singlePropMaterial = new DefaultMaterial();
 
+const prog = new Progress();
+
 export class BSPLevel extends Scene {
+
+    get progress() {
+        return prog;
+    }
+
+    constructor() {
+        super();
+
+        this.propTypes = new Map();
+
+        Resources.load().finally(() => {
+            this.loadBspMap();
+        })
+    }
+
+    registerProp(prop) {
+        if(!this.propTypes.has(prop.PropType)) {
+            this.propTypes.set(prop.PropType, {
+                mdlPath: prop.PropType,
+                vvdPath: prop.PropType.replace('.mdl', '.vvd'),
+                listeners: [],
+            });
+        }
+    }
+
+    getPropType(prop) {
+        return prop.PropType;
+    }
 
     static loadBspFile(meshData) {
 
@@ -66,26 +97,6 @@ export class BSPLevel extends Scene {
         // }
         // geometry.push(entityGroup);
 
-        // props
-        // const propsMaterial = new DefaultMaterial();
-        // const propsGroup = new Group();
-        // propsGroup.name = "Props";
-
-        // for(let prop of bspFile.gamelumps.sprp) {
-        //     if(prop.Origin) {
-        //         propsGroup.add(new Plane({
-        //             material: propsMaterial,
-        //             position: [
-        //                 prop.Origin[0] * -0.01,
-        //                 prop.Origin[2] * 0.01,
-        //                 prop.Origin[1] * 0.01,
-        //             ],
-        //             scale: [0.2, 0.2, 0.2],
-        //         }));
-        //     }
-        // }
-        // geometry.push(propsGroup);
-
         const map = new Geometry({
             vertecies: vertexData.vertecies,
             indecies: vertexData.indecies,
@@ -101,42 +112,24 @@ export class BSPLevel extends Scene {
         return geometry;
     }
 
-    constructor() {
-        super();
-
-        this.propTypes = new Map();
-
-        Resources.load().finally(() => {
-            this.loadBspMap();
-        })
-    }
-
-    registerProp(prop) {
-        if(!this.propTypes.has(prop.PropType)) {
-            this.propTypes.set(prop.PropType, {
-                mdlPath: prop.PropType,
-                vvdPath: prop.PropType.replace('.mdl', '.vvd'),
-                listeners: [],
-            });
-        }
-    }
-
-    getPropType(prop) {
-        return prop.PropType;
-    }
-
     async loadBspMap() {
+        
+        prog.addSteps(5);
 
         const startTime = performance.now();
 
         const bsp = await SourceDecoder.loadMap('../res/maps/ar_shoots.bsp');
 
+        prog.clearSteps(5);
+
+        const props = bsp.bsp.gamelumps.sprp;
+        
+        prog.addSteps(props.length);
+
         console.log('level decoded in', performance.now() - startTime, 'ms');
 
         const geo = BSPLevel.loadBspFile(bsp.meshData);
         this.add(geo);
-
-        const props = bsp.bsp.gamelumps.sprp;
 
         for(let prop of props) {
             this.registerProp(prop);
@@ -144,6 +137,10 @@ export class BSPLevel extends Scene {
             const type = this.propTypes.get(this.getPropType(prop));
 
             type.listeners.push(meshData => {
+                prog.clearSteps(1);
+
+                if(!meshData) return;
+
                 const propGeometry = new Geometry({
                     vertecies: meshData.vertecies.flat(),
                     indecies: meshData.indecies,
@@ -170,43 +167,20 @@ export class BSPLevel extends Scene {
 
         const propCount = this.propTypes.size;
         let propCounter = this.propTypes.size;
-        let propSkipCounter = 0;
 
         for(let [_, propType] of this.propTypes) {
             this.loadStaticProp(propType).then(meshData => {
-                if(!meshData) {
-                    propSkipCounter++;
-                } else {
-                    for(let listener of propType.listeners) {
-                        listener(meshData);
-                    }
+                for(let listener of propType.listeners) {
+                    listener(meshData);
                 }
 
                 propCounter--;
-                console.log(`Loaded prop ${propCount - propCounter} of ${propCount}`);
-
-                if(propCounter == 0) {
-                    console.log(`Skipped ${propSkipCounter} props.`);
-                }
+                // console.log(`Loaded prop ${propCount - propCounter} of ${propCount}`);
             });
         }
-
-        console.log(this.propTypes);
     }
 
     async loadStaticProp(propType) {
-        // mdl
-        // fetch('../res/' + propType).then(async res => {
-        //     const arrayBuffer = await res.arrayBuffer();
-
-        //     if(res.status !== 200) return;
-
-        //     const mdl = MDLFile.fromDataArray(arrayBuffer);
-
-        //     const bounds_min = mdl.header.hull_min;
-        //     const bounds_max = mdl.header.hull_max;
-        // });
-
         return SourceDecoder.loadProp(`../res/${propType.vvdPath}`);
     }
 
