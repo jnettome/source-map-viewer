@@ -2,9 +2,7 @@ import Viewport from '@uncut/viewport/components/Viewport';
 import Config from '@uncut/viewport/src/Config';
 import { MapLoader } from '../core/MapLoader';
 import { PlayerControler } from '@uncut/viewport/src/controlers/PlayerControler';
-
-Config.global.setValue('show.grid', true);
-Config.global.setValue('debug', false);
+import { ProgressBar } from './Progressbar';
 
 const canvas = document.createElement('canvas');
 const offscreen = canvas.transferControlToOffscreen();
@@ -18,7 +16,8 @@ export class SourceViewer extends Viewport {
             canvas: canvas,
         });
         
-        this.renderer.debug = true;
+        this.renderer.showGrid = false;
+        this.renderer.debug = false;
         this.renderer.clearPass = false;
 
         this.renderer.options = {
@@ -45,6 +44,10 @@ export class SourceViewer extends Viewport {
         }, 300);
 
         MapLoader.load().then(level => {
+
+            const progressbar = new ProgressBar(level.progress);
+            document.body.appendChild(progressbar);
+
             this.scene = level;
             level.add(this.camera);
         })

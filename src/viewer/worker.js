@@ -1,8 +1,8 @@
 import VVDFile from 'source-bsp-lib/src/VVDFile';
 import BSPFile from 'source-bsp-lib/src/BSPFile';
+import VPKFile from 'source-bsp-lib/src/VPKFile';
 
 importScripts("https://unpkg.com/comlink/dist/umd/comlink.js");
-// importScripts("../../../dist/umd/comlink.js");
 
 const SourceDecoder = {
     loadMap(bspMapPath) {
@@ -17,6 +17,15 @@ const SourceDecoder = {
                 bsp,
             };
         })
+    },
+    loadVPK(vpkPath) {
+        const load = async () => {
+            const vpkFetch = await fetch(vpkPath);
+            const vpkData = await vpkFetch.arrayBuffer();
+            const vpk = VPKFile.fromDataArray(vpkData);
+            return vpk;
+        }
+        return load();
     },
     loadProp(vvdPropPath) {
         return fetch(vvdPropPath).then(async res => {
