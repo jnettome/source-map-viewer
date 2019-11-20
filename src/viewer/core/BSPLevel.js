@@ -126,8 +126,6 @@ export class BSPLevel extends Scene {
 
         this.progress.message("Loading props");
 
-        const singlePropMaterial = new DefaultMaterial();
-
         for(let prop of props) {
             this.registerProp(prop);
 
@@ -141,7 +139,7 @@ export class BSPLevel extends Scene {
                 const propGeometry = new Geometry({
                     vertecies: meshData.vertecies.flat(),
                     indecies: meshData.indecies,
-                    material: singlePropMaterial,
+                    material: new DefaultMaterial(),
                     scale: [-0.01, 0.01, 0.01],
                     position: [
                         prop.Origin.data[0].data * -0.01,

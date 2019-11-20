@@ -12,7 +12,7 @@ export class SourceViewer extends Viewport {
         });
         
         this.renderer.showGrid = false;
-        // this.renderer.debug = true;
+        this.renderer.debug = true;
         this.renderer.clearPass = false;
 
         this.renderer.options = {
