@@ -155,7 +155,6 @@ export class BSPLevel extends Scene {
                     ],
                 });
                 const parts = prop.PropType.split('/');
-                propGeometry.matrixAutoUpdate = false;
                 propGeometry.name = parts[parts.length-1];
                 
                 this.add(propGeometry);

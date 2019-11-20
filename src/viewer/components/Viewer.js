@@ -4,20 +4,15 @@ import { MapLoader } from '../core/MapLoader';
 import { PlayerControler } from '@uncut/viewport/src/controlers/PlayerControler';
 import { ProgressBar } from './Progressbar';
 
-const canvas = document.createElement('canvas');
-const offscreen = canvas.transferControlToOffscreen();
-
 export class SourceViewer extends Viewport {
 
     constructor() {
         super({
             controllertype: PlayerControler,
-            offscreen: offscreen,
-            canvas: canvas,
         });
         
         this.renderer.showGrid = false;
-        this.renderer.debug = false;
+        // this.renderer.debug = true;
         this.renderer.clearPass = false;
 
         this.renderer.options = {
