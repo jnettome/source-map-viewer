@@ -30,29 +30,26 @@ const SourceDecoder = {
     },
     loadProp(propType) {
         // mdl
-        return fetch('../res/' + propType).then(async res => {
+        // return fetch('../res/' + propType).then(async res => {
+        //     const arrayBuffer = await res.arrayBuffer();
+
+        //     if(res.status !== 200) return;
+
+        //     const mdl = MDLFile.fromDataArray(arrayBuffer);
+
+        //     const bounds_min = mdl.header.hull_min;
+        //     const bounds_max = mdl.header.hull_max;
+        // });
+        
+        return fetch('../res/' + propType.replace('.mdl', '.vvd')).then(async res => {
             const arrayBuffer = await res.arrayBuffer();
 
             if(res.status !== 200) return;
 
-            const mdl = MDLFile.fromDataArray(arrayBuffer);
+            const vvd = VVDFile.fromDataArray(arrayBuffer);
+            const meshData = vvd.convertToMesh();
 
-            const bounds_min = mdl.header.hull_min;
-            const bounds_max = mdl.header.hull_max;
-        
-            return fetch('../res/' + propType.replace('.mdl', '.vvd')).then(async res => {
-                const arrayBuffer = await res.arrayBuffer();
-    
-                if(res.status !== 200) return;
-    
-                const vvd = VVDFile.fromDataArray(arrayBuffer);
-                const meshData = vvd.convertToMesh();
-
-                console.log(mdl);
-                console.log(vvd);
-    
-                return meshData;
-            });
+            return meshData;
         });
     }
 };

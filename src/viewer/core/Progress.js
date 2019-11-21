@@ -31,6 +31,9 @@ export class Progress {
     }
 
     message(...data) {
+        const console = document.querySelector('dev-console');
+        console.log(...data);
+
         for(let f of this.listeners) {
             f(...data);
         }
