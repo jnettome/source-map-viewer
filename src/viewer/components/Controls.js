@@ -51,13 +51,6 @@ export class ViewerControls extends HTMLElement {
         const template = html`
             <style>${styles}</style>
             <div class="options">
-                <div class="meta">
-                    <div class="row">
-                        <span>Show Grid</span>
-                        <check-box ?checked=${renderer.showGrid} @change=${(e) => { renderer.showGrid = e.target.checked; }} 
-                                    icon="visibility_off" active-icon="visibility"></check-box>
-                    </div>
-                </div>
                 <div class="layers">
                     ${layers.map((layer, i) => {
                         const visChangeHandler = e => {

@@ -28,17 +28,12 @@ check-box {
     margin-left: 5px;
 }
 
-.meta {
-    margin: 5px 0;
-    font-size: 1em;
-}
-
 .options {
     height: 100%;
 }
 
 .layers {
-    height: calc(100% - 36px);
+    height: 100%;
     overflow: auto;
     width: 100%;
     box-sizing: border-box;

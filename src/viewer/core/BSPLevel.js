@@ -15,6 +15,7 @@ import VVDFile from 'source-bsp-lib/src/VVDFile.js';
 import VPKFile from 'source-bsp-lib/src/VPKFile.js';
 import * as Comlink from "comlink";
 import { MapLoader } from './MapLoader';
+import PrimitivetMaterial from '@uncut/viewport/src/materials/PrimitiveMaterial';
 
 const worker = new Worker("worker.js");
 const SourceDecoder = Comlink.wrap(worker);
@@ -31,8 +32,120 @@ export class BSPLevel extends Scene {
         this.propTypes = new Map();
 
         Resources.load().finally(() => {
-            this.loadBspMap();
+            // this.loadBspMap();
+            this.loadPropExample();
         })
+    }
+
+    loadPropExample() {
+        this.progress.addSteps(5);
+        this.progress.message("Loading props");
+
+        SourceDecoder.loadProp(`../res/models/props/gg_vietnam/oilbarrels.mdl`).then(meshData => {
+
+            if(!meshData) {
+                console.error('No Prop');
+                return;
+            }
+
+            const propGeometry = new Geometry({
+                vertecies: meshData.vertecies.flat(),
+                indecies: meshData.indecies,
+                material: new DefaultMaterial(),
+                scale: [-0.1, 0.1, 0.1],
+                position: [ 0, 0, 0 ],
+                rotation: [ 0, 0, 0 ],
+            });
+            propGeometry.name = "Example Prop";
+            
+            this.add(propGeometry);
+
+            this.progress.clearSteps(5);
+        })
+    }
+
+    // map from here
+
+    async loadBspMap() {
+        
+        this.progress.addSteps(5);
+        this.progress.message("Loading level");
+
+        const startTime = performance.now();
+
+        const bsp = await SourceDecoder.loadMap('../res/maps/ar_shoots.bsp');
+
+        this.progress.clearSteps(5);
+
+        const props = bsp.bsp.gamelumps.sprp;
+        
+        this.progress.addSteps(props.length);
+
+        this.progress.message('Level decoded in', (performance.now() - startTime).toFixed(2), 'ms');
+
+        const geo = BSPLevel.loadBspFile(bsp.meshData);
+        this.add(geo);
+        
+        this.progress.message("Level loaded");
+
+        this.progress.message("Loading props");
+
+        const single = new DefaultMaterial();
+
+        for(let prop of props) {
+            this.registerProp(prop);
+
+            const type = this.propTypes.get(this.getPropType(prop));
+
+            type.listeners.push(meshData => {
+                this.progress.clearSteps(1);
+
+                if(!meshData) return;
+
+                const propGeometry = new Geometry({
+                    vertecies: meshData.vertecies.flat(),
+                    indecies: meshData.indecies,
+                    material: single,
+                    scale: [-0.01, 0.01, 0.01],
+                    position: [
+                        prop.Origin.data[0].data * -0.01,
+                        prop.Origin.data[2].data * 0.01,
+                        prop.Origin.data[1].data * 0.01,
+                    ],
+                    rotation: [
+                        prop.Angles.data[0].data * Math.PI / 180,
+                        prop.Angles.data[1].data * Math.PI / 180,
+                        prop.Angles.data[2].data * Math.PI / 180,
+                    ],
+                });
+                const parts = prop.PropType.split('/');
+                propGeometry.name = parts[parts.length-1];
+                
+                this.add(propGeometry);
+            });
+        }
+
+        const propCount = this.propTypes.size;
+        let propCounter = this.propTypes.size;
+
+        for(let [_, propType] of this.propTypes) {
+            this.loadStaticProp(propType).then(meshData => {
+                for(let listener of propType.listeners) {
+                    listener(meshData);
+                }
+
+                propCounter--;
+                this.progress.message(`Loaded prop ${propCount - propCounter} of ${propCount}`);
+
+                if(propCounter == 0) {
+                    this.progress.message(`Props loaded`);
+                }
+            });
+        }
+    }
+
+    async loadStaticProp(propType) {
+        return SourceDecoder.loadProp(`../res/${propType.vvdPath}`);
     }
 
     registerProp(prop) {
@@ -100,86 +213,6 @@ export class BSPLevel extends Scene {
         geometry.push(map);
 
         return geometry;
-    }
-
-    async loadBspMap() {
-        
-        this.progress.addSteps(5);
-        this.progress.message("Loading level");
-
-        const startTime = performance.now();
-
-        const bsp = await SourceDecoder.loadMap('../res/maps/ar_shoots.bsp');
-
-        this.progress.clearSteps(5);
-
-        const props = bsp.bsp.gamelumps.sprp;
-        
-        this.progress.addSteps(props.length);
-
-        this.progress.message('Level decoded in', (performance.now() - startTime).toFixed(2), 'ms');
-
-        const geo = BSPLevel.loadBspFile(bsp.meshData);
-        this.add(geo);
-        
-        this.progress.message("Level loaded");
-
-        this.progress.message("Loading props");
-
-        for(let prop of props) {
-            this.registerProp(prop);
-
-            const type = this.propTypes.get(this.getPropType(prop));
-
-            type.listeners.push(meshData => {
-                this.progress.clearSteps(1);
-
-                if(!meshData) return;
-
-                const propGeometry = new Geometry({
-                    vertecies: meshData.vertecies.flat(),
-                    indecies: meshData.indecies,
-                    material: new DefaultMaterial(),
-                    scale: [-0.01, 0.01, 0.01],
-                    position: [
-                        prop.Origin.data[0].data * -0.01,
-                        prop.Origin.data[2].data * 0.01,
-                        prop.Origin.data[1].data * 0.01,
-                    ],
-                    rotation: [
-                        prop.Angles.data[0].data * Math.PI / 180,
-                        prop.Angles.data[1].data * Math.PI / 180,
-                        prop.Angles.data[2].data * Math.PI / 180,
-                    ],
-                });
-                const parts = prop.PropType.split('/');
-                propGeometry.name = parts[parts.length-1];
-                
-                this.add(propGeometry);
-            });
-        }
-
-        const propCount = this.propTypes.size;
-        let propCounter = this.propTypes.size;
-
-        for(let [_, propType] of this.propTypes) {
-            this.loadStaticProp(propType).then(meshData => {
-                for(let listener of propType.listeners) {
-                    listener(meshData);
-                }
-
-                propCounter--;
-                this.progress.message(`Loaded prop ${propCount - propCounter} of ${propCount}`);
-
-                if(propCounter == 0) {
-                    this.progress.message(`Props loaded`);
-                }
-            });
-        }
-    }
-
-    async loadStaticProp(propType) {
-        return SourceDecoder.loadProp(`../res/${propType.vvdPath}`);
     }
 
 }

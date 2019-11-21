@@ -1,5 +1,4 @@
 import Viewport from '@uncut/viewport/components/Viewport';
-import Config from '@uncut/viewport/src/Config';
 import { MapLoader } from '../core/MapLoader';
 import { PlayerControler } from '@uncut/viewport/src/controlers/PlayerControler';
 import { ProgressBar } from './Progressbar';
@@ -11,8 +10,6 @@ export class SourceViewer extends Viewport {
             controllertype: PlayerControler,
         });
         
-        this.renderer.showGrid = false;
-        this.renderer.debug = true;
         this.renderer.clearPass = false;
 
         this.renderer.options = {
