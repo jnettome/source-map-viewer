@@ -4,6 +4,7 @@ import { Geometry } from '@uncut/viewport/src/scene/Geometry';
 import { Scene } from '@uncut/viewport/src/scene/Scene';
 import * as Comlink from "comlink";
 import VTFFile from 'source-bsp-lib/src/VTFFile.js';
+import VMTFile from 'source-bsp-lib/src/VMTFile.js';
 import { MapLoader } from './MapLoader';
 
 const worker = new Worker("worker.js");
@@ -62,8 +63,6 @@ export class BSPLevel extends Scene {
 
         const bsp = await SourceDecoder.loadMap('../res/maps/ar_shoots.bsp');
 
-        this.progress.clearSteps(5);
-
         const props = bsp.bsp.gamelumps.sprp;
         const geo = await this.loadBspFile(bsp);
         this.add(geo);
@@ -71,6 +70,8 @@ export class BSPLevel extends Scene {
         // return;
         
         this.progress.addSteps(props.length);
+        this.progress.clearSteps(5);
+
         this.progress.message('Level decoded in', (performance.now() - startTime).toFixed(2), 'ms');
         
         this.progress.message("Level loaded");
@@ -83,15 +84,30 @@ export class BSPLevel extends Scene {
 
             const type = this.propTypes.get(this.getPropType(prop));
 
-            type.listeners.push(meshData => {
+            type.listeners.push(propData => {
                 this.progress.clearSteps(1);
 
+                const texture = propData.texture;
+                const meshData = propData.meshData;
+
                 if(!meshData) return;
+
+                const mat = () => {
+                    const mat = {
+                        diffuseColor: [Math.random(), Math.random(), Math.random(), 1],
+                    };
+                    const vtf = propData.texture;
+                    if(vtf) {
+                        mat.texture = new Texture(vtf.imageData, vtf.format);
+                    }
+    
+                    return new DefaultMaterial(mat);
+                }
 
                 const propGeometry = new Geometry({
                     vertecies: meshData.vertecies.flat(),
                     indecies: meshData.indecies,
-                    material: new DefaultMaterial(),
+                    material: mat(),
                     scale: [-0.01, 0.01, 0.01],
                     position: [
                         prop.Origin.data[0].data * -0.01,
@@ -104,6 +120,7 @@ export class BSPLevel extends Scene {
                         prop.Angles.data[2].data * Math.PI / 180,
                     ],
                 });
+
                 const parts = prop.PropType.split('/');
                 propGeometry.name = parts[parts.length-1];
                 
@@ -115,9 +132,10 @@ export class BSPLevel extends Scene {
         let propCounter = this.propTypes.size;
 
         for(let [_, propType] of this.propTypes) {
-            this.loadStaticProp(propType).then(meshData => {
+            this.loadStaticProp(propType).then(p => {
+
                 for(let listener of propType.listeners) {
-                    listener(meshData);
+                    listener(p);
                 }
 
                 propCounter--;
@@ -131,7 +149,7 @@ export class BSPLevel extends Scene {
     }
 
     async loadStaticProp(propType) {
-        return SourceDecoder.loadProp(`../res/${propType.vvdPath}`);
+        return SourceDecoder.loadProp(propType.mdlPath);
     }
 
     registerProp(prop) {
@@ -152,17 +170,47 @@ export class BSPLevel extends Scene {
     async loadMapTextures(textureArray) {
         return new Promise(async (resolve, reject) => {
             const textures = new Map();
+            
             for(let texture of textureArray) {
-                await fetch(`../res/materials/${texture.toLocaleLowerCase()}.vtf`).then(async res => {
+                const vmt = await fetch(`../res/materials/${texture.toLocaleLowerCase()}.vmt`).then(async res => {
                     if(res.status == 200) {
                         const dataArray = await res.arrayBuffer();
-
-                        if(dataArray.byteLength > 0) {
-                            const vtf = VTFFile.fromDataArray(dataArray);
-                            textures.set(texture, vtf);
-                        }
+                        return VMTFile.fromDataArray(dataArray);
                     }
                 });
+
+                if(vmt && vmt.data.lightmappedgeneric) {
+                    const materialTexture = vmt.data.lightmappedgeneric['$basetexture'];
+
+                    if(materialTexture) {
+                        await fetch(`../res/materials/${materialTexture.toLocaleLowerCase()}.vtf`).then(async res => {
+                            if(res.status == 200) {
+                                const dataArray = await res.arrayBuffer();
+                                const vtf = VTFFile.fromDataArray(dataArray);
+                                
+                                textures.set(texture, vtf);
+                            }
+                        });
+                    }
+                }
+                if(vmt && vmt.data.worldvertextransition) {
+                    const materialTexture = vmt.data.worldvertextransition['$basetexture'];
+
+                    if(materialTexture) {
+                        await fetch(`../res/materials/${materialTexture.toLocaleLowerCase()}.vtf`).then(async res => {
+                            if(res.status == 200) {
+                                const dataArray = await res.arrayBuffer();
+                                const vtf = VTFFile.fromDataArray(dataArray);
+                                
+                                textures.set(texture, vtf);
+                            }
+                        });
+                    }
+                }
+
+                if(!textures.has(texture)) {
+                    console.warn('Missing texture', texture);
+                }
             }
             resolve(textures);
         })
