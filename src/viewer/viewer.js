@@ -1,9 +1,9 @@
 import './components/Viewer.js';
-import './components/Controls.js';
+import './components/Outliner.js';
 import './components/MapSelect.js';
+import './components/Console.js';
 import '@uncut/gyro-layout/components/layout/Layout.js';
 import layoutStyles from '@uncut/gyro-layout/components/layout/Layout.css';
-import './components/Console.js';
 
 const layoutStyle = document.createElement('style');
 layoutStyle.innerHTML = layoutStyles;

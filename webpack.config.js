@@ -4,10 +4,9 @@ module.exports = {
     mode: "development",
     entry: {
         'viewer': "./src/viewer/viewer.js",
-        'worker': "./src/viewer/worker.js",
+        'worker': "./src/viewer/SourceWorker.js",
     },
     module: {
-        noParse: /gl-viewport/,
         rules: [
             {
                 test: /\.css$|\.svg$/,
@@ -18,7 +17,6 @@ module.exports = {
     plugins: [
         new CopyPlugin([
             { from: 'src/viewer/viewer.html', to: './index.html' },
-            { from: 'src/viewer/viewer.css', to: './' }
         ]),
     ],
 }

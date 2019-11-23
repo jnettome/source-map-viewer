@@ -5,10 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Viewer</title>
+    
+    <style>
+        body {
+            background: #1c1c1c;
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            color: #eee;
+        }
+        
+        main {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        viewer-controls {
+            z-index: 10000;
+            position: absolute;
+            top: 0;
+            width: 180px;
+            right: 0;
+            bottom: 0;
+            margin: 10px;
+        }
+        
+        source-map-viewer {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        map-select {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            bottom: 10px;
+            width: auto;
+            z-index: 1000;
+        }
+    </style>
 
     <script type="module" src="viewer.js"></script>
-
-    <link rel="stylesheet" href="viewer.css">
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
@@ -17,7 +57,7 @@
     <main>
         <source-map-viewer></source-map-viewer>
         <!-- <map-select></map-select> -->
-        <!-- <viewer-controls tab="Scene"></viewer-controls> -->
+        <!-- <viewer-outliner tab="Scene"></viewer-outliner> -->
         <dev-console></dev-console>
     </main>
 

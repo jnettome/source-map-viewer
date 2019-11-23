@@ -1,9 +1,4 @@
-import VVDFile from 'source-bsp-lib/src/VVDFile';
-import BSPFile from 'source-bsp-lib/src/BSPFile';
-import VPKFile from 'source-bsp-lib/src/VPKFile';
-import MDLFile from 'source-bsp-lib/src/MDLFile';
-import VMTFile from 'source-bsp-lib/src/VMTFile';
-import VTFFile from 'source-bsp-lib/src/VTFFile';
+import { VVDFile, BSPFile, VPKFile, MDLFile, VMTFile, VTFFile } from 'source-bsp-lib';
 
 importScripts("https://unpkg.com/comlink/dist/umd/comlink.js");
 

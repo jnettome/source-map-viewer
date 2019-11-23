@@ -1,21 +1,43 @@
 import Viewport from '@uncut/viewport/components/Viewport';
-import { MapLoader } from '../core/MapLoader';
+import { MapLoader } from '../MapLoader';
 import { PlayerControler } from '@uncut/viewport/src/controlers/PlayerControler';
 import { ProgressBar } from './Progressbar';
 
 export class SourceViewer extends Viewport {
 
     constructor() {
-        super({
-            controllertype: PlayerControler,
-        });
+        super({ controllertype: PlayerControler });
         
         this.renderer.clearPass = false;
-
         this.renderer.options = {
 			CULL_FACE: false,
 		}
 
+        this.enableCameraSaveState();
+        this.enableSelecting();
+        this.loadMap();        
+    }
+
+    loadMap() {
+        // const progressbar = new ProgressBar(MapLoader.progress);
+        // document.body.appendChild(progressbar);
+
+        MapLoader.load().then(level => {
+            this.scene = level;
+            level.add(this.camera);
+        })
+    }
+
+    enableSelecting() {
+        super.enableSelecting();
+
+        this.addEventListener('select', () => {
+            const outliner = document.querySelector('viewer-controls');
+            outliner.focusLayer(this.cursor.parent);
+        });
+    }
+
+    enableCameraSaveState() {
         const lastCamPos = localStorage.getItem('camera');
         const cam = JSON.parse(lastCamPos);
         
@@ -34,21 +56,6 @@ export class SourceViewer extends Viewport {
                 rotation: this.camera.rotation,
             }));
         }, 300);
-
-        const progressbar = new ProgressBar(MapLoader.progress);
-        document.body.appendChild(progressbar);
-
-        MapLoader.load().then(level => {
-            this.scene = level;
-            level.add(this.camera);
-        })
-
-        this.enableSelecting();
-
-        this.addEventListener('select', () => {
-            const outliner = document.querySelector('viewer-controls');
-            outliner.focusLayer(this.cursor.parent);
-        });
     }
 
 }
