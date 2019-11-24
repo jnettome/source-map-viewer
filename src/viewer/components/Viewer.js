@@ -1,7 +1,6 @@
 import Viewport from '@uncut/viewport/components/Viewport';
-import { MapLoader } from '../MapLoader';
 import { PlayerControler } from '@uncut/viewport/src/controlers/PlayerControler';
-import { ProgressBar } from './Progressbar';
+import { MapLoader } from '../MapLoader';
 
 export class SourceViewer extends Viewport {
 
@@ -19,9 +18,6 @@ export class SourceViewer extends Viewport {
     }
 
     loadMap() {
-        // const progressbar = new ProgressBar(MapLoader.progress);
-        // document.body.appendChild(progressbar);
-
         MapLoader.load().then(level => {
             this.scene = level;
             level.add(this.camera);

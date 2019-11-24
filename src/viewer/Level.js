@@ -11,7 +11,9 @@ export class Level extends Scene {
 
     loadLevel(mapName) {
         const model = new Model();
+        const oldObjects = [...this.objects];
         this.objects = model.geometry;
+        model.geometry.add(...oldObjects);
         model.loadMap(mapName);
     }
 

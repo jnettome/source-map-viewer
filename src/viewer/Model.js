@@ -3,6 +3,8 @@ import { Geometry } from '@uncut/viewport/src/scene/Geometry';
 import * as Comlink from "comlink";
 import { VMTFile, VTFFile } from 'source-bsp-lib';
 import { Texture } from '@uncut/viewport/src/materials/Texture';
+import { Progress } from './Progress';
+import { ProgressBar } from './components/Progressbar';
 
 const worker = new Worker("worker.js");
 const SourceDecoder = Comlink.wrap(worker);
@@ -17,6 +19,12 @@ const directories = {
 
 const target_folders = [ "materials", "models", "particles", "scenes" ];
 const file_types = [ "vmt", "vtf", "mdl", "phy", "vtx", "vvd", "pcf" ];
+
+const prog = new Progress();
+prog.addSteps(5);
+
+const progressbar = new ProgressBar(prog);
+document.body.appendChild(progressbar);
 
 export class Model {
 
@@ -122,7 +130,14 @@ export class Model {
     }
 
     async loadMap(mapName) {
+
+        prog.message('Loading map.');
+
         const bsp = await Model.getMap(mapName);
+
+        prog.clearSteps(4);
+
+        prog.message('Loading textures.');
 
         const textures = await this.loadTextures(bsp.bsp.textures);
 
@@ -138,15 +153,15 @@ export class Model {
             indecies: meshData.indecies
         };
 
+        prog.message('Loading props.');
+
         this.loadMapProps(bsp.bsp.gamelumps.sprp);
         
         const map = new Geometry({
             vertecies: vertexData.vertecies,
             indecies: vertexData.indecies,
             materials: meshData.textures.map(tex => {
-                const mat = {
-                    diffuseColor: [Math.random(), Math.random(), Math.random(), 1],
-                };
+                const mat = {};
                 const vtf = textures.get(tex);
                 if(vtf) {
                     mat.texture = new Texture(vtf.imageData, vtf.format);
@@ -161,16 +176,24 @@ export class Model {
         map.name = "World";
 
         this.geometry.add(map);
+
+        prog.clearSteps(1);
     }
 
     async loadMapProps(props) {
+        const propCount = props.length;
+
+        let propCounter = 0;
+
+        prog.addSteps(propCount);
+
         for(let prop of props) {
+
             this.registerProp(prop);
 
             const type = propTypes.get(this.getPropType(prop));
 
             type.listeners.push(propData => {
-
                 const mat = () => {
                     if(propData.texture) {
                         return new DefaultMaterial({
@@ -203,6 +226,11 @@ export class Model {
                 propGeometry.name = parts[parts.length-1];
                 
                 this.geometry.add(propGeometry);
+
+                prog.clearSteps(1);
+
+                propCounter++;
+                prog.message(`Loaded prop ${propCounter} of ${propCount}`);
             });
         }
 
@@ -211,7 +239,9 @@ export class Model {
                 for(let listener of propType.listeners) {
                     listener(p);
                 }
-            });
+            }).catch(err => {
+                prog.clearSteps(propType.listeners.length);
+            })
         }
     }
 
