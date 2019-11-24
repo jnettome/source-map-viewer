@@ -1,4 +1,8 @@
+import DefaultMaterial from '@uncut/viewport/src/materials/DefaultMaterial';
+import { Geometry } from '@uncut/viewport/src/scene/Geometry';
 import * as Comlink from "comlink";
+import { VMTFile, VTFFile } from 'source-bsp-lib';
+import { Texture } from '@uncut/viewport/src/materials/Texture';
 
 const worker = new Worker("worker.js");
 const SourceDecoder = Comlink.wrap(worker);
@@ -25,7 +29,32 @@ export class Model {
     }
 
     constructor() {
+        this.geometry = new Set();
+    }
 
+    loadPropExample(propName = 'gg_vietnam/palm_a_cluster_b.mdl') {
+        return SourceDecoder.loadProp(`./models/props/${propName}`).then(propData => {
+
+            const mat = () => {
+                if(propData.texture) {
+                    return new DefaultMaterial({
+                        diffuseColor: [0, 0, 0, 0],
+                        texture: new Texture(propData.texture.imageData, propData.texture.format)
+                    });
+                } else {
+                    return new DefaultMaterial();
+                }
+            }
+
+            const propGeometry = new Geometry({
+                vertecies: propData.vertecies.flat(),
+                indecies: propData.indecies,
+                material: mat(),
+                scale: [-0.01, 0.01, 0.01],
+            });
+
+            this.geometry.add(propGeometry);
+        })
     }
     
     registerProp(prop) {
@@ -93,7 +122,7 @@ export class Model {
     }
 
     async loadMap(mapName) {
-        const bsp = Model.getMap(mapName);
+        const bsp = await Model.getMap(mapName);
 
         const textures = await this.loadTextures(bsp.bsp.textures);
 
@@ -108,9 +137,9 @@ export class Model {
             ])).flat(),
             indecies: meshData.indecies
         };
-        
-        const geometry = [];
 
+        this.loadMapProps(bsp.bsp.gamelumps.sprp);
+        
         const map = new Geometry({
             vertecies: vertexData.vertecies,
             indecies: vertexData.indecies,
@@ -131,42 +160,31 @@ export class Model {
         });
         map.name = "World";
 
-        geometry.push(map);
-
-        return geometry;
+        this.geometry.add(map);
     }
 
-    loadMapProps(mapName) {
-        const single = new DefaultMaterial();
-
+    async loadMapProps(props) {
         for(let prop of props) {
             this.registerProp(prop);
 
             const type = propTypes.get(this.getPropType(prop));
 
             type.listeners.push(propData => {
-                this.progress.clearSteps(1);
-
-                const texture = propData.texture;
-                const meshData = propData.meshData;
-
-                if(!meshData) return;
 
                 const mat = () => {
-                    const mat = {
-                        diffuseColor: [Math.random(), Math.random(), Math.random(), 1],
-                    };
-                    const vtf = propData.texture;
-                    if(vtf) {
-                        mat.texture = new Texture(vtf.imageData, vtf.format);
+                    if(propData.texture) {
+                        return new DefaultMaterial({
+                            diffuseColor: [0, 0, 0, 0],
+                            texture: new Texture(propData.texture.imageData, propData.texture.format)
+                        });
+                    } else {
+                        return new DefaultMaterial();
                     }
-    
-                    return new DefaultMaterial(mat);
                 }
 
                 const propGeometry = new Geometry({
-                    vertecies: meshData.vertecies.flat(),
-                    indecies: meshData.indecies,
+                    vertecies: propData.vertecies.flat(),
+                    indecies: propData.indecies,
                     material: mat(),
                     scale: [-0.01, 0.01, 0.01],
                     position: [
@@ -184,34 +202,17 @@ export class Model {
                 const parts = prop.PropType.split('/');
                 propGeometry.name = parts[parts.length-1];
                 
-                this.add(propGeometry);
+                this.geometry.add(propGeometry);
             });
         }
 
-        const propCount = propTypes.size;
-        let propCounter = propTypes.size;
-
         for(let [_, propType] of propTypes) {
-            this.loadStaticProp(propType).then(p => {
-
+            SourceDecoder.loadProp(propType.mdlPath).then(p => {
                 for(let listener of propType.listeners) {
                     listener(p);
                 }
-
-                propCounter--;
-                this.progress.message(`Loaded prop ${propCount - propCounter} of ${propCount}`);
-
-                if(propCounter == 0) {
-                    this.progress.message(`Props loaded`);
-                }
             });
         }
-    }
-
-    loadProp(propName) {
-
-
-
     }
 
 }

@@ -1,24 +1,22 @@
 {
   "name": "source-map-viewer",
   "version": "1.0.0",
-  "description": "View Source 2 Maps in the browser.",
+  "description": "View Source Maps in the browser.",
   "main": "index.js",
   "dependencies": {
     "@uncut/common-components": "git+https://github.com/luckydye/common-components.git",
-    "@uncut/gyro-layout": "git+https://github.com/luckydye/gyro-layout.git",
     "@uncut/viewport": "git+https://github.com/luckydye/viewport.git",
     "comlink": "^4.1.0",
     "lit-html": "^1.1.2",
     "source-bsp-lib": "file:../source-bsp-lib",
-    "webpack": "^4.41.2",
     "ws": "^7.2.0"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^5.0.4",
     "file-loader": "^4.2.0",
     "raw-loader": "^3.1.0",
-    "webpack": "^4.41.0",
-    "webpack-cli": "^3.3.9"
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
   },
   "scripts": {
     "build:w": "webpack -w",

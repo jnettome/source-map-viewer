@@ -1,4 +1,4 @@
-import { VVDFile, BSPFile, VPKFile, MDLFile, VMTFile, VTFFile } from 'source-bsp-lib';
+import { VVDFile, BSPFile, VPKFile, MDLFile, VMTFile, VTFFile, VTXFile } from 'source-bsp-lib';
 
 importScripts("https://unpkg.com/comlink/dist/umd/comlink.js");
 
@@ -6,10 +6,10 @@ const SourceDecoder = {
     loadMap(bspMapPath) {
         return fetch(bspMapPath).then(async res => {
             const arrayBuffer = await res.arrayBuffer();
-            
+
             const bsp = BSPFile.fromDataArray(arrayBuffer);
             const meshData = bsp.convertToMesh();
-            
+
             return {
                 meshData,
                 bsp,
@@ -63,18 +63,32 @@ const SourceDecoder = {
 
         prop.texture = vtf;
         
-        return fetch('../res/' + propType.replace('.mdl', '.vvd')).then(async res => {
+        const vtx = await fetch('../res/' + propType.replace('.mdl', '.dx90.vtx')).then(async res => {
+            if(res.status !== 200) return;
             const arrayBuffer = await res.arrayBuffer();
-
+            return VTXFile.fromDataArray(arrayBuffer);
+        });
+        
+        const vdd = await fetch('../res/' + propType.replace('.mdl', '.vvd')).then(async res => {
             if(res.status !== 200) return;
 
-            const vvd = VVDFile.fromDataArray(arrayBuffer);
-            const meshData = vvd.convertToMesh();
+            const arrayBuffer = await res.arrayBuffer();
 
-            prop.meshData = meshData;
+            const vvd = VVDFile.fromDataArray(arrayBuffer);
+            const vertecies = vvd.convertToMesh();
+
+            const realVertecies = vtx.vertexIndecies;
+            const realIndecies = vtx.indecies;
+
+            prop.vertecies = realVertecies.map(rv => {
+                return vertecies[rv];
+            });
+            prop.indecies = realIndecies;
 
             return prop;
         });
+
+        return vdd;
     }
 };
 

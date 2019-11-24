@@ -1,20 +1,18 @@
 import { Scene } from '@uncut/viewport/src/scene/Scene';
-import { GameState } from './Gamestate';
-
-const gamestate = new GameState();
+import { Model } from './Model';
 
 export class Level extends Scene {
 
     constructor() {
         super();
 
-        
+        this.loadLevel('ar_shoots');
     }
 
-    showPlayers() {
-        gamestate.onData = data => {
-            
-        }
+    loadLevel(mapName) {
+        const model = new Model();
+        this.objects = model.geometry;
+        model.loadMap(mapName);
     }
 
 }
