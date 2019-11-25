@@ -109,23 +109,21 @@ export class Console extends HTMLElement {
                     position: fixed;
                     top: 15px;
                     left: 15px;
-                    background: rgba(150, 150, 150, 0.95);
+                    background: rgba(27, 27, 27, 0.95);
                     opacity: 0.95;
-                    width: 750px;
                     display: flex;
                     flex-direction: column;
                     display: none;
                     color: #eee;
-                    border-radius: 3px;
                     overflow: hidden;
                 }
                 :host([open]) {
                     display: block;
                 }
                 .log {
-                    min-height: 150px;
-                    max-height: 150px;
-                    width: 100%;
+                    min-height: 200px;
+                    max-height: 200px;
+                    width: 650px;
                     display: flex;
                     flex-direction: column;
                     overflow: auto;
@@ -135,7 +133,6 @@ export class Console extends HTMLElement {
                     flex: 1;
                     padding: 8px;
                     box-sizing: border-box;
-                    border: 2px solid grey;
                 }
                 .log-line {
                     white-space: pre;
@@ -143,7 +140,7 @@ export class Console extends HTMLElement {
                 input {
                     padding: 8px;
                     color: currentColor;
-                    background: grey;
+                    background: rgba(0, 0, 0, 0.95);
                     border: none;
                     outline: none;
                     font-size: 13px;
