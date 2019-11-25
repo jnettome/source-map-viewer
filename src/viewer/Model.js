@@ -65,7 +65,8 @@ export class Model {
                 scale: [-0.01, 0.01, 0.01],
             });
 
-            this.geometry.add(propGeometry);
+            this.propGeometry.add(propGeometry);
+            this.propGeometry.uid = Date.now().toString();
         })
     }
     
@@ -226,8 +227,10 @@ export class Model {
                     ],
                 });
                 
-                this.propGeometry.add(propGeometry);
-                this.propGeometry.uid = Date.now().toString();
+                this.geometry.add(propGeometry);
+                
+                // this.propGeometry.add(propGeometry);
+                // this.propGeometry.uid = Date.now().toString();
 
                 prog.clearSteps(1);
 
