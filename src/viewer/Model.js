@@ -5,6 +5,7 @@ import { VMTFile, VTFFile } from 'source-bsp-lib';
 import { Texture } from '@uncut/viewport/src/materials/Texture';
 import { Progress } from './Progress';
 import { ProgressBar } from './components/Progressbar';
+import { Group } from '@uncut/viewport/src/geo/Group';
 
 const worker = new Worker("worker.js");
 const SourceDecoder = Comlink.wrap(worker);
@@ -37,7 +38,10 @@ export class Model {
     }
 
     constructor() {
+        this.propGeometry = new Group();
         this.geometry = new Set();
+
+        this.geometry.add(this.propGeometry);
     }
 
     loadPropExample(propName = 'gg_vietnam/palm_a_cluster_b.mdl') {
@@ -221,11 +225,9 @@ export class Model {
                         prop.Angles.data[2].data * Math.PI / 180,
                     ],
                 });
-
-                const parts = prop.PropType.split('/');
-                propGeometry.name = parts[parts.length-1];
                 
-                this.geometry.add(propGeometry);
+                this.propGeometry.add(propGeometry);
+                this.propGeometry.uid = Date.now().toString();
 
                 prog.clearSteps(1);
 
