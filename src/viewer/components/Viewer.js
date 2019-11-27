@@ -1,4 +1,5 @@
 import Viewport from '@uncut/viewport/components/Viewport';
+import Console from '@uncut/viewport/components/Console';
 import { PlayerControler } from '@uncut/viewport/src/controlers/PlayerControler';
 import { MapLoader } from '../MapLoader';
 
@@ -31,27 +32,6 @@ export class SourceViewer extends Viewport {
             const outliner = document.querySelector('viewer-controls');
             outliner.focusLayer(this.cursor.parent);
         });
-    }
-
-    enableCameraSaveState() {
-        const lastCamPos = localStorage.getItem('camera');
-        const cam = JSON.parse(lastCamPos);
-        
-        if(cam && cam.position && cam.rotation) {
-            this.camera.position.x = cam.position[0];
-            this.camera.position.y = cam.position[1];
-            this.camera.position.z = cam.position[2];
-            this.camera.rotation.x = cam.rotation[0];
-            this.camera.rotation.y = cam.rotation[1];
-            this.camera.rotation.z = cam.rotation[2];
-        }
-
-        setInterval(() => {
-            localStorage.setItem('camera', JSON.stringify({
-                position: this.camera.position,
-                rotation: this.camera.rotation,
-            }));
-        }, 300);
     }
 
 }
