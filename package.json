@@ -4,11 +4,10 @@
   "description": "View Source Maps in the browser.",
   "main": "index.js",
   "dependencies": {
-    "@uncut/common-components": "git+https://github.com/luckydye/common-components.git",
-    "@uncut/viewport": "git+https://github.com/luckydye/viewport.git",
+    "@uncut/viewport": "git+https://github.com/luckydye/viewport.git#v0.1.1",
     "comlink": "^4.1.0",
     "lit-html": "^1.1.2",
-    "source-bsp-lib": "file:../source-bsp-lib",
+    "source-bsp-lib": "git+https://github.com/luckydye/source-bsp-lib.git#v0.1.0",
     "ws": "^7.2.0"
   },
   "devDependencies": {
