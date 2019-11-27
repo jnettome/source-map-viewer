@@ -1,4 +1,5 @@
 import Viewport from '@uncut/viewport/components/Viewport';
+import Console from '@uncut/viewport/components/Console';
 import { PlayerControler } from '@uncut/viewport/src/controlers/PlayerControler';
 import { MapLoader } from '../MapLoader';
 

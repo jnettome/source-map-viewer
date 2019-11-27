@@ -50,11 +50,13 @@ export class Model {
             const mat = () => {
                 if(propData.texture) {
                     return new DefaultMaterial({
-                        diffuseColor: [0, 0, 0, 0],
+                        diffuseColor: [1, 0, 0, 0],
                         texture: new Texture(propData.texture.imageData, propData.texture.format)
                     });
                 } else {
-                    return new DefaultMaterial();
+                    return new DefaultMaterial({
+                        diffuseColor: [1, 0, 0, 0],
+                    });
                 }
             }
 
@@ -166,7 +168,9 @@ export class Model {
             vertecies: vertexData.vertecies,
             indecies: vertexData.indecies,
             materials: meshData.textures.map(tex => {
-                const mat = {};
+                const mat = {
+                    diffuseColor: [61 / 255, 53 / 255, 40 / 255, 1],
+                };
                 const vtf = textures.get(tex);
                 if(vtf) {
                     mat.texture = new Texture(vtf.imageData, vtf.format);
