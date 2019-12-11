@@ -1,4 +1,4 @@
-import { Resources } from '@uncut/viewport/src/Resources';
+import { Resources } from '@uncut/viewport/src/resources/Resources';
 import { Level } from './Level';
 
 export class MapLoader {
